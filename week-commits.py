@@ -5,7 +5,7 @@ from dateutil.parser import isoparse
 import datetime
 
 
-def scan_commits(start_date, committer_name):
+def scan_commits(start_date, committer_name, url):
     repo = Repo("./")
     commits = repo.iter_commits()
     end_date = datetime.datetime.now().timestamp()
@@ -23,8 +23,11 @@ def scan_commits(start_date, committer_name):
                         for i in final_result
                         if i.committer.name.startswith(committer_name)
                         ]
+
+    ### import ipdb; ipdb.set_trace()
     for i in final_result:
-        print(datetime.datetime.fromtimestamp(i.committed_date), ' -- ' , i.message)
+        print(datetime.datetime.fromtimestamp(i.committed_date), '-', i.message, url + i.hexsha)
+        print()
 
 
 if __name__ == "__main__":
@@ -34,7 +37,8 @@ if __name__ == "__main__":
     parser.add_argument("committer_name", help="Select committs done by this committer")
     args = parser.parse_args()
     scan_commits(isoparse(args.start_date)
-                            , args.committer_name)
+                            , args.committer_name,
+                            'https://$GIT_REPO_URL/commits/')
 
 
 
